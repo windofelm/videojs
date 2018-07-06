@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="./node_modules/video.js/dist/video-js.css">
+    <link rel="stylesheet" href="./node_modules/videojs-markers/dist/videojs.markers.min.css">
 </head>
 <body>
     <!--<video controls autoplay preload="auto" ...>-->
@@ -16,31 +17,82 @@
     <div>
         <br>
         <a href="#" onclick="changeSource(event)">Change Source</a>
+        <a href="#" onclick="pauseVideo(event)">Pause Video</a>
+        <a href="#" onclick="makeFullScreen(event)">Make FullScreen</a>
+        <a href="#" onclick="setCurrentTime(event, 35)">Set Current Time</a>
+        <a href="#" onclick="getRemainingTime(event)">Get Remaining Time</a>
     </div>
+    <script type="application/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="application/javascript" src="node_modules/video.js/dist/video.min.js"></script>
+    <script type="application/javascript" src="node_modules/videojs-markers/dist/videojs-markers.min.js"></script>
     <script type="application/javascript">
         //videojs(document.querySelector('.video-js'));
-        var player = videojs('my-player', {
+        var myPlayer = videojs('my-player', {
             controls: true,
-            autoplay: true,
-            preload: 'auto'
+            autoplay: false,
+            preload: 'auto',
+            language: "tr"
+        }, function() {
+            this.addClass('my-example');
         });
 
-        player.ready(function() {
-            this.addClass('element-ready');
-            player.src('//vjs.zencdn.net/v/oceans.mp4');
+        videojs.addLanguage('tr', {
+            Play: 'Oynat',
+            Pause: 'Pausa',
+            'Current Time': 'Tiempo reproducido',
+            'Duration': 'Duración total',
+            'Remaining Time': 'Tiempo restante'
         });
 
-        player.on('ended', function() {
-            //this.dispose();
+        myPlayer.src('//vjs.zencdn.net/v/oceans.mp4');
+        myPlayer.poster('https://placeimg.com/960/400/any');
+
+        myPlayer.ready(function() {
+            //this.addClass('element-ready');
+            var howLoudIsIt = myPlayer.volume();
+            //myPlayer.volume(0.5);
+            console.log("volume", howLoudIsIt);
+            console.log("isMuted", myPlayer.muted());
+            //console.log("isFullscreen", myPlayer.isFullscreen());
+
+            setTimeout(function () {
+                var lengthOfVideo = myPlayer.duration();
+                console.log("videoDuration", lengthOfVideo);
+            }, 100);
+
+        });
+
+        myPlayer.on('ended', function() {
+            // this.dispose(); // remove player
             console.log("Ended");
         });
 
         function changeSource(event) {
             event.preventDefault();
             //console.log(player.remainingTime());
-            player.src('http://appsperia.keydesign-themes.com/demo3/assets/video.mp4');
-            console.log(player);
+            myPlayer.src('http://appsperia.keydesign-themes.com/demo3/assets/video.mp4');
+            console.log(myPlayer);
+        }
+
+        function pauseVideo(event) {
+            event.preventDefault();
+            myPlayer.pause();
+        }
+
+        function makeFullScreen(event) {
+            event.preventDefault();
+            myPlayer.requestFullscreen();
+            //myPlayer.exitFullscreen();
+        }
+
+        function setCurrentTime(event, time) {
+            event.preventDefault();
+            myPlayer.currentTime(time);
+        }
+
+        function getRemainingTime(event) {
+            event.preventDefault();
+            console.log("remainingTime", myPlayer.remainingTime());
         }
 
 
@@ -49,6 +101,27 @@
             {type: "video/webm", src: "http://www.example.com/path/to/video.webm"},
             {type: "video/ogg", src: "http://www.example.com/path/to/video.ogv"}
         ]);*/
+
+        myPlayer.markers({
+            breakOverlay:{
+                display: true,
+                displayTime: 3
+            },
+            onMarkerClick: function(marker){
+                $('.dynamic-demo-events').append('<li class="list-group-item">Marker click: '+marker.time+'</li>');
+            },
+            onMarkerReached: function(marker){
+                console.log("marketTime", marker.time);
+                console.log("marketTime", marker);
+                $('.dynamic-demo-events').append('<li class="list-group-item">Marker reached: '+marker.time+'</li>');
+            },
+            markers: [
+                {time: 9.5, text: "this", overlayText: "1", class: 'custom-marker'},
+                {time: 16,  text: "is", overlayText: "2", class: 'custom-marker'},
+                {time: 23.6,text: "so", overlayText: "3", class: 'custom-marker'},
+                {time: 28,  text: "cool", overlayText: "4", class: 'custom-marker'}
+            ]
+        });
 
     </script>
 </body>
