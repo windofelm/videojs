@@ -11,7 +11,7 @@
 </head>
 <body>
     <!--<video controls autoplay preload="auto" ...>-->
-    <video id="my-player" class="video-js">
+    <video id="my-player" class="video-js vjs-big-play-centered">
         <!--<source src="./assets/oceans.mp4" type="video/mp4">-->
     </video>
     <div>
@@ -22,6 +22,11 @@
         <a href="#" onclick="setCurrentTime(event, 35)">Set Current Time</a>
         <a href="#" onclick="getRemainingTime(event)">Get Remaining Time</a>
     </div>
+
+    <div class="cc">
+
+    </div>
+
     <script type="application/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="application/javascript" src="node_modules/video.js/dist/video.min.js"></script>
     <script type="application/javascript" src="node_modules/videojs-markers/dist/videojs-markers.min.js"></script>
@@ -113,6 +118,7 @@
             onMarkerReached: function(marker){
                 console.log("marketTime", marker.time);
                 console.log("marketTime", marker);
+                $('.cc').text(marker.overlayText);
                 $('.dynamic-demo-events').append('<li class="list-group-item">Marker reached: '+marker.time+'</li>');
             },
             markers: [
